@@ -15,6 +15,9 @@ flask-restplus = "*"
 pyjwt = "*"
 flask-script = "*"
 flask-testing = "*"
+flask-restx = "*"
+pytest = "*"
+click = "*"
 
 [requires]
 python_version = "3.7"
