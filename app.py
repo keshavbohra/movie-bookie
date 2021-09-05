@@ -2,7 +2,7 @@ import os
 import unittest
 from main import create_app, db
 from blueprints import blueprint
-from main.model import movie, screening, theatre
+from main.model import movie, screening, theatre, user, booking, blacklist
 from flask_migrate import Migrate
 
 app = create_app(os.getenv('FLASK_CONFIG') or 'dev')

@@ -1,7 +1,7 @@
-from .main import db
-from .main.model.movie import Movie
-from .main.model.theatre import Theatre
-from .main.model.screening import Screening
+from .. import db
+from ..model.movie import Movie
+from ..model.theatre import Theatre
+from ..model.screening import Screening
 
 def add_new_screening(data):
     """
@@ -10,7 +10,7 @@ def add_new_screening(data):
     status = 409
     response_object = dict()
 
-    movie = Movie.query.filter_by(.filter_by(movie_name=data['movie_name']).first())
+    movie = Movie.query.filter_by(movie_name=data['movie_name']).first()
     theatre = Theatre.query.filter_by(theatre_name=data['theatre_name'], theatre_city=data['theatre_city'])
     
     screening = Screening.query.filter_by(screening_name=data['screening_name']).first()
@@ -32,15 +32,14 @@ def add_new_screening(data):
 def get_all_screenings():
     return Screening.query.all()
 
-def get_screening_by_theatre_name(data):
-    return Screening.query.filter_by(theatre_name=data['theatre_name']).all()
+def get_screening_of_movie(data):
+    screenings = db.session.query(Screening.id, Screening.screening_start, Screening.screening_end, Screening.seats_remain, Theatre.id, Theatre.theatre_name, Theatre.theatre_city).join(Theatre).join(Movie).filter((Theatre.theatre_city.ilike(data['theatre_city'])) & (Movie.id == data['movie_id'])).all()
+    return screenings
 
-def get_movies_by_city(data):
-    screenings = Screening.query.filter_by(
-        theatre_city=data['theatre_city']).all()
-    movie_ids = [s.movie_id for s in screenings]
-    movies = Movie.filter_by(Movie.id.in_(movie_ids)).all()
-    return movies
+def get_screening_of_theatre(data):
+    screenings = db.session.query(Screening.id, Screening.screening_start, Screening.screening_end, Screening.seats_remain, Movie.id, Movie.movie_name, Movie.movie_duration, Movie.poster_url).join(Theatre).join(Movie).filter((Theatre.theatre_city.ilike(data['theatre_city'])) & (Movie.id == data['movie_id'])).all()
+    
+    return screenings
 
 def commit_data(data):
     db.session.add(data)

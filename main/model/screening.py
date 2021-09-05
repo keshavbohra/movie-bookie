@@ -14,5 +14,6 @@ class Screening(db.Model):
     theatre_id = db.Column(db.Integer, db.ForeignKey('theatres.id'))
     screening_start = db.Column(db.DateTime, nullable=False, default=datetime.now)
     screening_end = db.Column(db.DateTime, nullable=False, default=datetime.now)
-    seats_remain = db.Column(db.Integer)            
+    seats_remain = db.Column(db.Integer)
+    bookings = db.relationship('Booking', lazy='dynamic', backref='screening')
 
