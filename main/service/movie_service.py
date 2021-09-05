@@ -1,7 +1,7 @@
 from main import db
 from main.model.movie import Movie
-# from .main.model.theatre import Theatre
-# from .main.model.screening import Screening
+from main.model.theatre import Theatre
+from main.model.screening import Screening
 
 def add_new_movie(data):
     """
@@ -33,6 +33,11 @@ def get_movie_by_name(data):
     # Movie.query.filter_by(movie_name=data).first()
     movie = Movie.query.filter(Movie.movie_name.ilike(data)).first()
     return movie
+
+def get_movie_by_city(data):
+    movies = Movie.query.join(Screening, Movie.id == Screening.movie_id).join(
+        Theatre, (Screening.theatre_id == Theatre.id) & (Theatre.theatre_city.ilike(data))).all()
+    return movies
 
 def commit_data(data):
     db.session.add(data)

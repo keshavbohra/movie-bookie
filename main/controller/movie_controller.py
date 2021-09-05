@@ -28,11 +28,10 @@ class MovieList(Resource):
         data = request.json
         return add_new_movie(data=data)
 
-
 @api.route('/<movie_name>')
 @api.param('movie_name', 'The movie identifier')
 @api.response(404, 'Movie not found.')
-class User(Resource):
+class Movie(Resource):
     
     @api.doc('get a movie')
     @api.marshal_with(_movie)
