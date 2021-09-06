@@ -5,4 +5,4 @@ LABEL maintainer="Keshav Bohra <keshav.bohra@gmail.com>"
 COPY . /booking_app
 WORKDIR /booking_app
 
-RUN pip install -r requriements.txt
+RUN pip install -r requirements.txt
