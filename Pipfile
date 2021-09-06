@@ -16,6 +16,7 @@ flask-testing = "*"
 flask-restx = "*"
 pytest = "*"
 click = "*"
+gunicorn = "19.9.0"
 
 [requires]
 python_version = "3.7"
