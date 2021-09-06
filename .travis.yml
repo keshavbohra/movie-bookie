@@ -9,6 +9,10 @@ install:
 script:
 - python -m flask test
 
+branches:
+  only:
+    - main
+
 deploy:
   provider: heroku
   api_key:
