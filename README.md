@@ -45,7 +45,7 @@ A movie ticket booking application based on Python Flask's Restx APIs (backend o
   
 ## Assumptions for the current version
   > Show Screenings - 
-    * The API will take requried seats in the input body from user request to show only screenings which have remaining seats > required seats
+    * The API will take requried seats in the input body from user request to show only screenings which have remaining seats grater than required seats
     * The API will only show screenings which are starting one hour after current request timestamp
   > Seat Booking -
     * The API version assumes that the theater seats are homogenous in pricing and user seats aquiring occurs on theatre premisis on first come first serve basis and so application doesn't have to handle the complexity of seat mapping and seat holding.
