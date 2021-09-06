@@ -1,0 +1,123 @@
+import json
+import unittest
+
+from test.base import BaseTestCase
+
+def register_user(obj):
+    return obj.client.post(
+        '/user/register',
+        data=json.dumps(dict(
+            email='client_test@test.com',
+            username='client_test',
+            password='password'
+        )),
+        content_type='application/json'
+    )
+
+
+def add_theatre(obj, token=None):
+    if token:
+        return obj.client.post(
+            '/theatre/add',
+            data=json.dumps(dict(
+                theatre_name='Test Theatre',
+                theatre_city='Test City',
+                seats_num=50
+            )),
+            headers=dict(
+                Authorization='Bearer ' + token
+            ),
+            content_type='application/json'
+        )
+    else:
+        return obj.client.post(
+            '/theatre/add',
+            data=json.dumps(dict(
+                theatre_name='Test Theatre',
+                theatre_city='Test City',
+                seats_num=50
+            )),
+            content_type='application/json'
+        )
+
+
+def add_movie(obj, token=None):
+    if token:
+        return obj.client.post(
+            '/movie/add',
+            data=json.dumps(dict(
+                movie_name='Test Movie',
+                movie_duration=100,
+                poster_url='test.com/TestMovie'
+            )),
+            headers=dict(
+                Authorization='Bearer ' + token
+            ),
+            content_type='application/json'
+        )
+    else:
+        return obj.client.post(
+            '/movie/add',
+            data=json.dumps(dict(
+                movie_name='Test Movie',
+                movie_duration=100,
+                poster_url='test.com/TestMovie'
+            )),
+            content_type='application/json'
+        )
+
+def login_user(obj):
+    return obj.client.post(
+        '/auth/login',
+        data=json.dumps(dict(
+            email='client_test@test.com',
+            password='password'
+        )),
+        content_type='application/json'
+    )
+
+def add_screening(obj, theatre, movie, screening_start, screening_end, token=None):
+    if token:
+        return obj.client.post(
+            '/screening/add',
+            data=json.dumps(dict(
+                theatre_name='Test Theatre',
+                theatre_city='Test City',
+                seats_num=50
+            )),
+            headers=dict(
+                Authorization='Bearer ' + token
+            ),
+            content_type='application/json'
+        )
+    else:
+        return obj.client.post(
+            '/screening/add',
+            data=json.dumps(dict(
+                theatre_name='Test Theatre',
+                theatre_city='Test City',
+                seats_num=50
+            )),
+            content_type='application/json'
+        )
+
+
+class TestScreeningApis(BaseTestCase):
+
+    def test_theatre_add_not_admin(self):
+        with self.client:
+            register_response = register_user(self)
+            reg_reponse_body = json.loads(register_response.data)
+            auth_token = reg_reponse_body['Authorization']
+            screening_reponse = add_screening(self, auth_token)
+            self.assertEqual(screening_reponse.status_code, 401)
+        
+    def test_theatre_no_user(self):
+        with self.client:
+            
+            screening_reponse = add_screening(self)
+            self.assertEqual(screening_reponse.status_code, 401)
+
+
+if __name__ == '__main__':
+    unittest.main()

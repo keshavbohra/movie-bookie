@@ -10,8 +10,9 @@ class User(db.Model):
     """
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    admin = db.Column(db.Boolean, nullable=False, default=False)
     email = db.Column(db.String(255), unique=True, nullable=False)
-    registered_on = db.Column(db.DateTime, nullable=False)
+    registered_on = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     public_id = db.Column(db.String(255), unique=True)
     user_name = db.Column(db.String(255), unique=True)
     password = db.Column(db.String(255))

@@ -11,8 +11,16 @@ booking_marshaller = {
     'movie_name': fields.String(required=True, description='Movie Name'),
     'theatre_name': fields.String(required=True, description='Theatre Name'),
     'theatre_city': fields.String(required=True, description='Theatre City'),
-    'screening_time': fields.DateTime(required=True, description='Screening Start'),
+    'screening_time': fields.DateTime(attribute='screening_start', required=True, description='Screening Start'),
+    'movie_duration': fields.Integer(required=True, description='Duration of the movie.'),
     'total_seats': fields.Integer(required=True, description='Seats Booked')
+}
+
+screening_book_marshaller = {
+    'screening_id': fields.Integer(attribute='id', required=True, description='Screening id'),
+    'movie_id': fields.Integer(attribute='id', required=True, description='Movie id'),
+    'theatre_id': fields.Integer(attribute='id', required=True, description='Theatre id'),
+    'seats': fields.Integer(required=True, description='Seats Booked')
 }
 
 movie_marshaller = {
@@ -26,7 +34,7 @@ theatre_marshaller = {
     'theatre_id': fields.Integer(attribute='id', required=False, description='Theatre id'),
     'theatre_name': fields.String(required=True, description='Theatre name'),
     'theatre_city': fields.String(required=True, description='Theatre duration'),
-    'seats_num': fields.Integer(required=True, description='Total Seats')
+    'seats_num': fields.Integer(attribute='seats_remain', required=True, description='Total Seats')
 }
 
 user_marshaller = {
@@ -36,6 +44,11 @@ user_marshaller = {
     'public_id': fields.String(required=False, description='user Identifier')
 }
 
+user_update_marshaller = {
+    'email': fields.String(required=True, description='user email address'),
+    'admin': fields.Boolean(required=True, description='User role flag')
+}
+
 auth_marshaller = {
     'email': fields.String(required=True, description='The email address'),
     'password': fields.String(required=True, description='The user password '),
@@ -43,30 +56,29 @@ auth_marshaller = {
 
 class MovieDto:
     api = Namespace('movie', description='Movie related opertions')
-    # movie_screening_marshaller = {**screening_marshaller, **theatre_marshaller}
-    # screening_model = api.model('screening', screening_marshaller)
-    movie = api.model('movie', movie_marshaller)
-    # movie_marshaller['screening'] = fields.List(fields.Nested(screening_model), required=False)
-    # movie_screening = api.model('movie', movie_marshaller)
+    movie = api.model('movie_obj', movie_marshaller)
+
+class BookingDto:
+    api = Namespace('booking', description='Ticket Booking related operations')
+    screening_model = api.model('screening_book', screening_book_marshaller)
+    booking_model = api.model('booking', booking_marshaller)
 
 class TheatreDto:
     api = Namespace('theatre', description='Theatre related opertions')
-    # screening_model = api.model('screening', screening_marshaller)
-    theatre = api.model('theatre', theatre_marshaller)
-    # theatre_marshaller['screening'] = fields.List(fields.Nested(screening_model), required=False)
-    # theatre_screening = api.model('theatre', theatre_marshaller)
+    theatre = api.model('theatre_obj', theatre_marshaller)
 
 class ScreeningDto:
     api = Namespace('screening', description='Screening related opertions')
     screening = api.model('screening', screening_marshaller)
     movie_screening_marshaller = {**screening_marshaller, **theatre_marshaller}
-    movie_screening = api.model('movie', movie_screening_marshaller)
+    movie_screening = api.model('movie_screening', movie_screening_marshaller)
     theatre_screening_marshaller = {**screening_marshaller, **movie_marshaller}
-    theatre_screening = api.model('theatre', theatre_screening_marshaller)
+    theatre_screening = api.model('theatre_screening', theatre_screening_marshaller)
 
 class UserDto:
     api = Namespace('user', description='user related operations')
     user = api.model('user', user_marshaller)
+    user_update = api.model('user_update', user_update_marshaller)
 
 class AuthDto:
     api = Namespace('auth', description='authentication related operations')

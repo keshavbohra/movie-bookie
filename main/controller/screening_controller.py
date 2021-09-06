@@ -2,7 +2,8 @@ from flask import request
 from flask_restx import Resource, reqparse, inputs
 
 from ..utils.dto import ScreeningDto
-from ..service.screening_service import get_all_screenings, get_screening_of_movie, get_screening_of_theatre
+from ..utils.decorators import admin_token_required
+from ..service.screening_service import get_all_screenings, get_screening_of_movie, get_screening_of_theatre, add_new_screening
 
 api = ScreeningDto.api
 _screening = ScreeningDto.screening
@@ -13,6 +14,7 @@ _theatre_screening = ScreeningDto.theatre_screening
 class ScreeningList(Resource):
 
     @api.doc('List of all the screenings')
+    @admin_token_required
     @api.marshal_list_with(_screening, envelope='data')
     def get(self):
         """
@@ -20,20 +22,21 @@ class ScreeningList(Resource):
         """
         return get_all_screenings()
 
-    # @api.response(201, 'Theatre information added successfully.')
-    # @api.doc('Add a new theatre')
-    # @api.expect(_screening, validate=True)
-    # def post(self):
-    #     """
-    #         Add a new theatre
-    #     """
-    #     data = request.json
-    #     return add_new_theatre(data=data)
+    @api.response(201, 'Screening information added successfully.')
+    @admin_token_required
+    @api.doc('Add a new theatre')
+    @api.expect(_screening, validate=True)
+    def post(self):
+        """
+            Add a new theatre
+        """
+        data = request.json
+        return add_new_screening(data=data)
 
 
 @api.route('/movie-screen')
 @api.response(404, 'No screenings present for the given details.')
-class Movie(Resource):
+class MovieScreening(Resource):
 
     parser = reqparse.RequestParser()
     parser.add_argument('theatre_city', type=str,
@@ -43,6 +46,7 @@ class Movie(Resource):
                         help="Movie id for which the screening is required.",
                         default=True, required=True)
 
+    @api.doc(security=None)
     @api.expect(parser)
     @api.doc('List all the screenings for the given movie and city details')
     @api.marshal_list_with(_movie_screening)
@@ -58,16 +62,14 @@ class Movie(Resource):
 
 @api.route('/theatre-screen')
 @api.response(404, 'There are no active screenings in the theatre.')
-class Theatre(Resource):
+class TheatreScreening(Resource):
 
     parser = reqparse.RequestParser()
-    parser.add_argument('theatre_city', type=str,
-                        help="City in which the theatre is present.",
-                        default=True, required=True)
     parser.add_argument('theatre_id', type=int,
-                        help="Theatre id for which the screening is required.",
-                        default=True, required=True)
+                        help="Theatre id for which the screening is required.", 
+                        required=True)
 
+    @api.doc(security=None)
     @api.expect(parser)
     @api.doc('List all the screenings for the given theatre and city details')
     @api.marshal_list_with(_theatre_screening)
@@ -78,4 +80,4 @@ class Theatre(Resource):
         data = self.parser.parse_args()
         # data['theatre_city'] = request.args.get('theatre_city')
         # data['movie_id'] = request.args.get('movie_id')
-        return get_screening_of_movie(data)
+        return get_screening_of_theatre(data)
